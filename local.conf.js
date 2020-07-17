@@ -53,7 +53,7 @@ exports.config = {
         // maxInstances can get overwritten per capability. So if you have an in-house Selenium
         // grid with only 5 firefox instances available you can make sure that not more than
         // 5 instances get started at a time.
-        maxInstances: 5,
+        maxInstances: 1,
         //
         browserName: 'chrome'
         
@@ -65,6 +65,10 @@ exports.config = {
         maxInstances: 1,
         //
         browserName: 'firefox'
+    }, {
+        maxInstances: 1,
+        //
+        browserName: 'chrome'
     }*/],
     //
     // ===================
@@ -113,7 +117,25 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['chromedriver'],
+    services: [
+        ['selenium-standalone', {
+            logPath: 'logs',
+            installArgs: {
+                drivers: {
+                    chrome: { version: '84.0.4147.30' },
+                    firefox: { version: '0.26.0' },
+                    MicrosoftEdge: { version: '84.0.522.40' }
+                }
+            },
+            args: {
+                drivers: {
+                    chrome: { version: '84.0.4147.30' },
+                    firefox: { version: '0.26.0' },
+                    MicrosoftEdge: { version: '84.0.522.40' }
+                }
+            },
+        }]
+    ],
      
     //
     // Framework you want to run your specs with.
@@ -173,15 +195,23 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      */
     onPrepare: function (config, capabilities) {
-      // Empty .tmp/json_logs and .tmp/screenshots
-      let paths = ['.tmp/json_logs/', '.tmp/screenshots/'];
-      let files;
+      // Clean up .tmp
+      if (!fs.existsSync('.tmp/')) {
+        fs.mkdirSync('.tmp/');
+      };
+      let paths = ['.tmp/json_logs', '.tmp/screenshots', '.tmp/custom_logs'];
+      let files, path;
       for (let path_i in paths) {
-        files = fs.readdirSync(paths[path_i]);
-        for (let file_i in files) {
-          fs.unlinkSync(paths[path_i] + files[file_i]);
+        path = paths[path_i];
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path);
+        } else {
+          files = fs.readdirSync(path);
+          for (let file_i in files) {
+            fs.unlinkSync(path + '/' + files[file_i]);
+          }
         }
-      }
+      } 
     },
     /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service

@@ -1,26 +1,7 @@
+//const { join } = require('path');
+const fs = require('fs');
+
 exports.config = {
-    //
-    // ====================
-    // Runner Configuration
-    // ====================
-    //
-    // WebdriverIO allows it to run your tests in arbitrary locations (e.g. locally or
-    // on a remote machine).
-    runner: 'local',
-    //
-    // =====================
-    // Server Configurations
-    // =====================
-    // Host address of the running Selenium server. This information is usually obsolete as
-    // WebdriverIO automatically connects to localhost. Also, if you are using one of the
-    // supported cloud services like Sauce Labs, Browserstack, or Testing Bot you don't
-    // need to define host and port information because WebdriverIO can figure that out
-    // according to your user and key information. However, if you are using a private Selenium
-    // backend you should define the host address, port, and path here.
-    //
-//    hostname: 'hub.browserstack.com',
-//    port: 80,
-//    path: '',
     //
     // =================
     // Service Providers
@@ -31,28 +12,7 @@ exports.config = {
     //
     user: process.env.BROWSERSTACK_USER,
     key: process.env.BROWSERSTACK_ACCESSKEY,
-    //
-    // If you run your tests on Sauce Labs you can specify the region you want to run your tests
-    // in via the `region` property. Available short handles for regions are `us` (default) and `eu`.
-    // These regions are used for the Sauce Labs VM cloud and the Sauce Labs Real Device Cloud.
-    // If you don't provide the region it will default for the `us`
-    
-    //
-    // ==================
-    // Specify Test Files
-    // ==================
-    // Define which test specs should run. The pattern is relative to the directory
-    // from which `wdio` was called. Notice that, if you are calling `wdio` from an
-    // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
-    // directory is where your package.json resides, so `wdio` will be called from there.
-    //
-    specs: [
-        './test/*.js'
-    ],
-    // Patterns to exclude.
-    exclude: [
-        // 'path/to/excluded/files'
-    ],
+  
     //
     // ============
     // Capabilities
@@ -75,18 +35,106 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [{
-    
-        browserName: 'chrome',
-        name: 'Bstack-[WebdriverIO] Sample Test',
-        'browserstack.video' : false,
-        build: 'production',
-        project: 'test3'
-        // If outputDir is provided WebdriverIO can capture driver session logs
-        // it is possible to configure which logTypes to include/exclude.
-        // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
-        // excludeDriverLogs: ['bugreport', 'server'],
-    }],
+    capabilities: [
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'Windows',
+    os_version: '10',
+    browserName: 'Edge'
+  }/*,      
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'Windows',
+    os_version: '10',
+    browserName: 'Chrome'
+  },
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'Windows',
+    os_version: '10',
+    browserName: 'Firefox'
+  },
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'Windows',
+    os_version: '10',
+    browserName: 'IE'
+  },
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'OS X',
+    os_version: 'Catalina',
+    browserName: 'Chrome'
+  },
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'OS X',
+    os_version: 'Catalina',
+    browserName: 'Edge'
+  },
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'false',
+    os: 'OS X',
+    os_version: 'Catalina',
+    browserName: 'Firefox'
+  },
+  {
+    build: 'production',
+    name: 'rms',
+    project: 'test3',
+    'browserstack.video': 'true',
+    os: 'OS X',
+    os_version: 'Catalina',
+    'browserstack.debug': 'true',    
+    browserName: 'Safari'
+  }*/
+],  
+  
+    //
+    // ====================
+    // Runner Configuration
+    // ====================
+    //
+    // WebdriverIO allows it to run your tests in arbitrary locations (e.g. locally or
+    // on a remote machine).
+    runner: 'local',
+    //
+    // ==================
+    // Specify Test Files
+    // ==================
+    // Define which test specs should run. The pattern is relative to the directory
+    // from which `wdio` was called. Notice that, if you are calling `wdio` from an
+    // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
+    // directory is where your package.json resides, so `wdio` will be called from there.
+    //
+    specs: [
+        './test/*.js'
+    ],
+    // Patterns to exclude.
+    exclude: [
+        // 'path/to/excluded/files'
+    ],
     //
     // ===================
     // Test Configurations
@@ -94,7 +142,7 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'warn',
+    logLevel: 'error',
     //
     // Set specific log levels per logger
     // loggers:
@@ -118,7 +166,7 @@ exports.config = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: '',
+    baseUrl: 'https://run.pavlovia.org/',
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -134,7 +182,8 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    // services: [],
+    //services: ['chromedriver'],
+     
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -156,13 +205,11 @@ exports.config = {
     reporters: [
       'dot',
       ['json',{
-        outputDir: './Results',
+        outputDir: '.tmp/json_logs',
         stdout: false
       }]
     ],
     
-
-
     
     //
     // Options to be passed to Jasmine.
@@ -178,6 +225,9 @@ exports.config = {
         }
     },
     
+    // wd-image-comparison-service
+    
+    
     //
     // =====
     // Hooks
@@ -191,8 +241,25 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-    // onPrepare: function (config, capabilities) {
-    // },
+    onPrepare: function (config, capabilities) {
+      // Clean up .tmp
+      if (!fs.existsSync('.tmp/')) {
+        fs.mkdirSync('.tmp/');
+      };
+      let paths = ['.tmp/json_logs', '.tmp/screenshots', '.tmp/custom_logs'];
+      let files, path;
+      for (let path_i in paths) {
+        path = paths[path_i];
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path);
+        } else {
+          files = fs.readdirSync(path);
+          for (let file_i in files) {
+            fs.unlinkSync(path + '/' + files[file_i]);
+          }
+        }
+      } 
+    },
     /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service
      * for that worker as well as modify runtime environments in an async fashion.
@@ -302,8 +369,8 @@ exports.config = {
     // },
     onComplete: function (exitCode, config, capabilities, results) {
       const mergeResults = require('wdio-json-reporter/mergeResults');
-      mergeResults('./Results', 'wdio-*', 'results.json');
-    }    
+      mergeResults('.tmp/json_logs', 'wdio-*', 'results.json');
+    }
     /**
     * Gets executed when a refresh happens.
     * @param {String} oldSessionId session ID of the old session

@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <script>
+      startCanvas = function() {
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        ctx.beginPath();
+        ctx.arc(95, 50, 40, 0, 2 * Math.PI);
+        ctx.stroke(); 
+        c.style.display = "block";
+      }
+    </script>
+  </head>
+  <body>
+    <a id="startCanvas" onclick="startCanvas()">Click here</a>
+    <canvas id="myCanvas" style="display:none"></canvas>
+  </body>
+</html>
+

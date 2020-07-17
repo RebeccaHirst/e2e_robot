@@ -1,7 +1,7 @@
 // *** Modules
 Jimp = require('jimp');
 
-// *** Functions
+// *** Image processing functions
 // Crop a square from an img
 cropToSquare = (img) => {
   let dimension = img.bitmap.height < img.bitmap.width? img.bitmap.height : img.bitmap.width;
@@ -15,6 +15,7 @@ cropToSquare = (img) => {
 };
 
 // Drops alpha channel from PNG converted to array
+// NB - Not used anymore; merged with sdOfDifferences
 dropAlpha = (imgArray) => {
   let result = [];
   for (let i = 0; i < imgArray.length; i += 4) {
@@ -25,20 +26,27 @@ dropAlpha = (imgArray) => {
 
 // SD of difference scores
 // Based on https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Na%C3%AFve_algorithm
-let sdOfDifferences = function (left, right) {
+let sdOfDifferences = (left, right, dropAlpha = true) => {
   let sum = 0, sumSq = 0, dif;
   for (let i = 1; i < left.length; i++ ) {
-    dif = left[i] - right[i];
-    sum += dif;
-    sumSq += dif * dif;
+    if (dropAlpha && (i + 1) % 4 !== 0) {
+      dif = left[i] - right[i];
+      sum += dif;
+      sumSq += dif * dif;
+    }
   }
   return Math.sqrt((sumSq - (sum * sum) / left.length) / left.length);
 };
 
+// Full-page screenshot as jimp img
+let jimpScreenshot = async () => {
+  let screenshotBase64 = await browser.takeScreenshot();
+  return(await Jimp.read(new Buffer.from(screenshotBase64, 'base64')));
+};
+  
 describe('test3', () => {
   let screenshotFull; // Screenshot of page
   let platform;       // Prefix used for screenshots
-  let canvas;
   
   it('setup platform label', () => {
     platform =
@@ -57,62 +65,47 @@ describe('test3', () => {
   });
   
   it('dialog box screenshot', async () => {
-    // Take screenshot
-    let screenshotBase64 = await browser.takeScreenshot();
-    screenshotFull = await Jimp.read(new Buffer.from(screenshotBase64, 'base64'));
+    screenshotFull = await jimpScreenshot();
     screenshotFull.write('.tmp/screenshots/' + platform + ' dialog.png');    
   })
 
   it('start experiment', () => {
     $('#buttonOk').click();
-    canvas = $('<canvas />')
-    canvas.waitForExist();
+    $('<canvas />').waitForExist();
   });
 
   it('canvas screenshot', async () => {
-    let canvasId = await browser.findElement("tag name", "canvas");
-    let screenshotBase64 = await browser.takeElementScreenshot(
-      Object.values(canvasId)[0]            
-    );
-    // Convert to PNG
-    screenshotFull = await Jimp.read(new Buffer.from(screenshotBase64, 'base64'));
-    screenshotFull.write('.tmp/screenshots/' + platform + ' canvasElement.png');
-    
-    
-    // Take screenshot
-    screenshotBase64 = await browser.takeScreenshot();
-    // Convert to PNG
-    screenshotFull = await Jimp.read(new Buffer.from(screenshotBase64, 'base64'));
+    screenshotFull = await jimpScreenshot();
     screenshotFull.write('.tmp/screenshots/' + platform + ' canvasFull.png');
   });
   
   it('width is fullscreen', async () => {
-    // Compare screenshot width with screen width
-    let screenWidth = await browser.execute(() => { return screen.width });
+    let screenWidth = await browser.execute(() => { return screen.width; });
     expect(screenshotFull.bitmap.width).toBe(screenWidth);    
   });
   
   it("height is fullscreen", async () => {
-  // Compare screenshot width with screen width
-    let screenHeight = await browser.execute(() => { return screen.height });
-    expect(screenshotFull.bitmap.height).toBe(screenHeight);
+    let screenHeight = await browser.execute(() => { return screen.height; });
+    expect(screenshotFull.bitmap.height).toBe(screenHeight);    
   });
   
   it('has graphics match refence', async () => {
-    // Read reference image, convert to array, drop alpha
-    let referenceSquare = await Jimp.read('reference_img/test3.png');
     // Crop out square
     let screenshotSquare = cropToSquare(screenshotFull);
     screenshotSquare.write('.tmp/screenshots/' + platform + ' canvasSquare.png');    
+    // @ sotiri: disabled this part for your test
+    /*
+    let referenceSquare = await Jimp.read('reference_img/test3.png');    
     // Resize to reference
     let screenshotScaled = screenshotSquare.resize(referenceSquare.bitmap.width, referenceSquare.bitmap.width);
-    // Convert screenshot and reference to array, and drop alpha
-    let screenshotArray = dropAlpha([...screenshotScaled.bitmap.data]);
-    let referenceArray = dropAlpha([...referenceSquare.bitmap.data]);
-    // Compare
-    rms = sdOfDifferences(screenshotArray, referenceArray);
-    // DEBUG
-    screenshotSquare.write('.tmp/screenshots/' + platform + ' canvasScaled.png');    
-    fail(rms);
+    screenshotScaled.write('.tmp/screenshots/' + platform + ' canvasScaled.png');    
+    // Read reference 
+    
+    // Compare screenshot with reference
+    let rms = sdOfDifferences(
+      [...screenshotScaled.bitmap.data],
+      [...referenceSquare.bitmap.data]
+    );
+    */
   });
 });
