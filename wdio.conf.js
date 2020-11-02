@@ -1,4 +1,4 @@
-// Modules - Hello Thomas
+// Modules - Hello Thomas this should be sent to a different branch
 const fs = require('fs');
 const Jimp = require('jimp');
 const VisualRegressor = require('./test/shared/VisualRegressor.js');
